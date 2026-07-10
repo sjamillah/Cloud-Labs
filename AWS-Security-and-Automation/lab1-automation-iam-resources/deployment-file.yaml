@@ -1,0 +1,3 @@
+template-file-path: AWS-Security-and-Automation/lab1-automation-iam-resources/iam-resources.yaml
+parameters: {}
+tags: {}
