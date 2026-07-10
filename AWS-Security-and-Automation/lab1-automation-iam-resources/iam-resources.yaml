@@ -1,6 +1,6 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: '2010-09-17'
 Description: IAM lab with automated user, group, and permission provisioning using CloudFormation.
-# v2.4
+# v1.0
 Resources:
 
   IAMUserTemporaryPassword:
