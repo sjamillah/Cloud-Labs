@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IAM lab with automated user, group, and permission provisioning using CloudFormation.
+# v2.4
+Resources:
+
+  IAMUserTemporaryPassword:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: iam-lab-user-temp-password
+      Description: Auto-generated temporary password for all IAM lab users
+      GenerateSecretString:
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\'
+        RequireEachIncludedType: true
+
+  S3UserGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: S3UserGroup
+      Policies:
+        - PolicyName: S3ListBucketsPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListAllMyBuckets
+                  - s3:GetBucketLocation
+                Resource: '*'
+
+  EC2UserGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: EC2UserGroup
+      Policies:
+        - PolicyName: EC2GroupPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeInstanceStatus
+                  - ec2:DescribeImages
+                  - ec2:DescribeKeyPairs
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeVpcs
+                  - ec2:GetSecurityGroupsForVpc
+                  - ec2:RunInstances
+                  - ec2:CreateTags
+                Resource: '*'
+
+  S3User:
+    Type: AWS::IAM::User
+    DependsOn: IAMUserTemporaryPassword
+    Properties:
+      UserName: s3-user
+      Groups:
+        - !Ref S3UserGroup
+      LoginProfile:
+        Password: '{{resolve:secretsmanager:iam-lab-user-temp-password}}'
+        PasswordResetRequired: true
+
+  EC2User1:
+    Type: AWS::IAM::User
+    DependsOn: IAMUserTemporaryPassword
+    Properties:
+      UserName: ec2-user1
+      Groups:
+        - !Ref EC2UserGroup
+      LoginProfile:
+        Password: '{{resolve:secretsmanager:iam-lab-user-temp-password}}'
+        PasswordResetRequired: true
+
+  EC2User2:
+    Type: AWS::IAM::User
+    DependsOn: IAMUserTemporaryPassword
+    Properties:
+      UserName: ec2-user2
+      Groups:
+        - !Ref EC2UserGroup
+      LoginProfile:
+        Password: '{{resolve:secretsmanager:iam-lab-user-temp-password}}'
+        PasswordResetRequired: true
+      Policies:
+        - PolicyName: DenyEC2Creation
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Deny
+                Action:
+                  - ec2:RunInstances
+                Resource: '*'
+
+Outputs:
+  TemporaryPasswordSecretArn:
+    Description: Secrets Manager ARN for the temporary password
+    Value: !Ref IAMUserTemporaryPassword
+
+  S3UserArn:
+    Description: ARN of the S3 user
+    Value: !GetAtt S3User.Arn
+
+  EC2User1Arn:
+    Description: ARN of the first EC2 user
+    Value: !GetAtt EC2User1.Arn
+
+  EC2User2Arn:
+    Description: ARN of the second EC2 user
+    Value: !GetAtt EC2User2.Arn
