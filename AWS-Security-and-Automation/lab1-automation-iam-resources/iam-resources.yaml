@@ -51,16 +51,16 @@ Resources:
                   - ec2:CreateTags
                 Resource: '*'
 
-  S3User:
-    Type: AWS::IAM::User
-    DependsOn: IAMUserTemporaryPassword
-    Properties:
-      UserName: s3-user
-      Groups:
-        - !Ref S3UserGroup
-      LoginProfile:
-        Password: '{{resolve:secretsmanager:iam-lab-user-temp-password}}'
-        PasswordResetRequired: true
+  # S3User:
+  #   Type: AWS::IAM::User
+  #   DependsOn: IAMUserTemporaryPassword
+  #   Properties:
+  #     UserName: s3-user
+  #     Groups:
+  #       - !Ref S3UserGroup
+  #     LoginProfile:
+  #       Password: '{{resolve:secretsmanager:iam-lab-user-temp-password}}'
+  #       PasswordResetRequired: true
 
   EC2User1:
     Type: AWS::IAM::User
