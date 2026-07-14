@@ -98,9 +98,9 @@ Outputs:
     Description: Secrets Manager ARN for the temporary password
     Value: !Ref IAMUserTemporaryPassword
 
-  S3UserArn:
-    Description: ARN of the S3 user
-    Value: !GetAtt S3User.Arn
+  # S3UserArn:
+  #   Description: ARN of the S3 user
+  #   Value: !GetAtt S3User.Arn
 
   EC2User1Arn:
     Description: ARN of the first EC2 user
