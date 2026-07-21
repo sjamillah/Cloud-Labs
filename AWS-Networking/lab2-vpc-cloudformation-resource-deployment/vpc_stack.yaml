@@ -11,14 +11,6 @@ Parameters:
     Type: String
     Default: Securely Deploying Resources in a VPC Using CloudFormation
 
-Tags:
-  - Key: Name
-    Value: !Sub ${AWS::StackName}-vpc
-  - Key: Project
-    Value: !Ref AWS::StackName
-  - Key: ManagedBy
-    Value: CloudFormation
-
 Resources:
  
   VPC:
@@ -28,8 +20,12 @@ Resources:
       EnableDnsHostnames: true
       EnableDnsSupport: true
       Tags:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-vpc
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-vpc
+      - Key: Project
+        Value: !Ref AWS::StackName
+      - Key: ManagedBy
+        Value: CloudFormation
  
   IGW:
     Type: AWS::EC2::InternetGateway
