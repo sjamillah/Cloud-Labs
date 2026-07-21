@@ -291,6 +291,32 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName}-web-az2
 
+  AppServerAZ1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Sub '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetAZ1
+      SecurityGroupIds:
+        - !Ref PrivateSG
+      IamInstanceProfile: !Ref InstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-app-az1
+
+  AppServerAZ2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Sub '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetAZ2
+      SecurityGroupIds:
+        - !Ref PrivateSG
+      IamInstanceProfile: !Ref InstanceProfile
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-app-az2
+
 Outputs:
  
   WebServerAZ1IP:
