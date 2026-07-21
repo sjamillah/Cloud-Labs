@@ -231,3 +231,62 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}-private-sg
+
+  WebServerLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-web-lt
+      LaunchTemplateData:
+        ImageId: !Sub '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+        InstanceType: t3.micro
+        SecurityGroupIds:
+          - !Ref PublicSG
+        IamInstanceProfile:
+          Name: !Ref InstanceProfile
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -e
+            exec > /var/log/user-data.log 2>&1
+
+            dnf update -y
+            dnf install -y httpd
+
+            AZ=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone)
+            INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+
+            cat > /var/www/html/index.html <<EOF
+            <!DOCTYPE html>
+            <html>
+            <body>
+              <h1>${FullName}</h1>
+              <h2>${LabName}</h2>
+              <p>AZ: $AZ</p>
+              <p>Instance: $INSTANCE_ID</p>
+            </body>
+            </html>
+            EOF
+
+            systemctl enable --now httpd
+
+  WebServerAZ1:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WebServerLaunchTemplate
+        Version: !GetAtt WebServerLaunchTemplate.LatestVersionNumber
+      SubnetId: !Ref PublicSubnetAZ1
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-web-az1
+
+  WebServerAZ2:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WebServerLaunchTemplate
+        Version: !GetAtt WebServerLaunchTemplate.LatestVersionNumber
+      SubnetId: !Ref PublicSubnetAZ2
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-web-az2
