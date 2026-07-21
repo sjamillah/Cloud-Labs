@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Multi-AZ VPC architecture with Apache web servers in public subnets and application instances in private subnets. Administrative access is provided through AWS Systems Manager (SSM) only, with SSH disabled.
+
+Parameters:
+ 
+  FullName:
+    Type: String
+    Default: jamillahssozi
+ 
+  LabName:
+    Type: String
+    Default: Securely Deploying Resources in a VPC Using CloudFormation
