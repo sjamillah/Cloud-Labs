@@ -77,3 +77,33 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}-private-az2
+
+  EIPAZ1:
+    Type: AWS::EC2::EIP
+    DependsOn: IGWAttachment
+    Properties:
+      Domain: vpc
+ 
+  EIPAZ2:
+    Type: AWS::EC2::EIP
+    DependsOn: IGWAttachment
+    Properties:
+      Domain: vpc
+ 
+  NatGWAZ1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt EIPAZ1.AllocationId
+      SubnetId: !Ref PublicSubnetAZ1
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-nat-az1
+ 
+  NatGWAZ2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt EIPAZ2.AllocationId
+      SubnetId: !Ref PublicSubnetAZ2
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-nat-az2
