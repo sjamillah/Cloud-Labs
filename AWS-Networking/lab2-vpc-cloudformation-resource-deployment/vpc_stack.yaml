@@ -290,3 +290,29 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}-web-az2
+
+Outputs:
+ 
+  WebServerAZ1IP:
+    Description: AZ1 web server — open in browser
+    Value: !GetAtt WebServerAZ1.PublicIp
+ 
+  WebServerAZ2IP:
+    Description: AZ2 web server — open in browser
+    Value: !GetAtt WebServerAZ2.PublicIp
+ 
+  AppServerAZ1ID:
+    Description: AZ1 private instance — use for SSM session
+    Value: !Ref AppServerAZ1
+ 
+  AppServerAZ2ID:
+    Description: AZ2 private instance — use for SSM session
+    Value: !Ref AppServerAZ2
+ 
+  NatGWAZ1IP:
+    Description: AZ1 NAT Gateway public IP — verify in traceroute from private instances
+    Value: !Ref EIPAZ1
+ 
+  NatGWAZ2IP:
+    Description: AZ2 NAT Gateway public IP — verify in traceroute from private instances
+    Value: !Ref EIPAZ2
