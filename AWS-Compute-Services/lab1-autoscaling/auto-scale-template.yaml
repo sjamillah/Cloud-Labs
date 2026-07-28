@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-17'
+Description: > 
+  Designed a highly available auto-scaling web tier using a multi-AZ VPC, with an ALB in public subnets and EC2 Auto Scaling Groups in private subnets. Implemented NAT Gateways in each AZ for resilient outbound connectivity and configured CloudWatch-based scaling policies for automatic scale-out and scale-in. Removed inbound SSH access and managed instances securely through SSM.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: autoscaling-lab
+    Description: Used to prefix/tag resources
+ 
+  VpcCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+ 
+  PublicSubnet1CIDR:
+    Type: String
+    Default: 10.0.1.0/24
+ 
+  PublicSubnet2CIDR:
+    Type: String
+    Default: 10.0.2.0/24
+ 
+  PrivateSubnet1CIDR:
+    Type: String
+    Default: 10.0.11.0/24
+ 
+  PrivateSubnet2CIDR:
+    Type: String
+    Default: 10.0.12.0/24
+ 
+  ScaleOutCpuThreshold:
+    Type: Number
+    Default: 30
+    Description: Average CPU (%) above which the ASG scales out
+ 
+  ScaleInCpuThreshold:
+    Type: Number
+    Default: 20
+    Description: Average CPU (%) below which the ASG scales in (kept below the scale-out threshold to avoid flapping)
+ 
+  AsgMinSize:
+    Type: Number
+    Default: 1
+ 
+  AsgDesiredCapacity:
+    Type: Number
+    Default: 1
+ 
+  AsgMaxSize:
+    Type: Number
+    Default: 4
+ 
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
