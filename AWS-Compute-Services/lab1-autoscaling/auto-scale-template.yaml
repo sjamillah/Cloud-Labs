@@ -468,3 +468,23 @@ Resources:
       TreatMissingData: notBreaching
       AlarmActions:
         - !Ref ScaleInPolicy
+
+Outputs:
+  ALBDNSName:
+    Description: Public DNS name of the Application Load Balancer
+    Value: !GetAtt ApplicationLoadBalancer.DNSName
+ 
+  VPCId:
+    Value: !Ref VPC
+ 
+  AutoScalingGroupName:
+    Value: !Ref WebServerAutoScalingGroup
+ 
+  TargetGroupArn:
+    Value: !Ref WebServerTargetGroup
+ 
+  ScaleOutAlarmName:
+    Value: !Ref ScaleOutAlarm
+ 
+  ScaleInAlarmName:
+    Value: !Ref ScaleInAlarm
