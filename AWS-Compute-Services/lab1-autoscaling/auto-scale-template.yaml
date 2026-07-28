@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-17'
+AWSTemplateFormatVersion: '2010-09-09'
 Description: > 
   Designed a highly available auto-scaling web tier using a multi-AZ VPC, with an ALB in public subnets and EC2 Auto Scaling Groups in private subnets. Implemented NAT Gateways in each AZ for resilient outbound connectivity and configured CloudWatch-based scaling policies for automatic scale-out and scale-in. Removed inbound SSH access and managed instances securely through SSM.
 
