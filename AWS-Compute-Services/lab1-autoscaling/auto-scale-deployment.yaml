@@ -1,0 +1,3 @@
+template-file-path: AWS-Compute-Services/lab1-autoscaling/auto-scale-template.yaml
+parameters: {}
+tags: {}
