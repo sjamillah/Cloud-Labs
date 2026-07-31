@@ -280,6 +280,7 @@ Resources:
   EC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      InstanceProfileName: !Sub ${ProjectName}-ec2-role
       Roles:
         - !Ref EC2InstanceRole
 
