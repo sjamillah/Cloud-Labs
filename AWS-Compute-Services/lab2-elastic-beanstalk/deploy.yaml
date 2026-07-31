@@ -15,8 +15,8 @@ permissions:
 env:
   AWS_REGION: eu-north-1
   S3_BUCKET: eb-deploy-python-lab
-  EB_APPLICATION_NAME: python-eb-app
-  EB_ENVIRONMENT_NAME: python-eb-app-env
+  EB_APPLICATION_NAME: eb-deploy-python-lab
+  EB_ENVIRONMENT_NAME: eb-deploy-python-lab-env
 
 jobs:
   deploy:
