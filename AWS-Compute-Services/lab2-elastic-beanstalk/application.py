@@ -5,6 +5,7 @@ import boto3
 from botocore.exceptions import ClientError
 from flask import Flask, jsonify
 
+"""Application for the Elastic BeanStalk"""
 
 application = Flask(__name__)
 
