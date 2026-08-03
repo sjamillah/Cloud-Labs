@@ -5,6 +5,7 @@ import boto3
 from botocore.exceptions import ClientError
 from flask import Flask, jsonify
 
+
 application = Flask(__name__)
 
 AWS_REGION = os.environ.get("AWS_REGION", "eu-north-1")
