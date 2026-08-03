@@ -38,7 +38,7 @@ Parameters:
 
   EBSolutionStackName:
     Type: String
-    Default: "64bit Amazon Linux 2023 v4.3.4 running Python 3.12"
+    Default: "64bit Amazon Linux 2023 v4.13.5 running Python 3.12"
     Description: >
       VERIFY THIS before deploying - solution stack strings change over time.
       Run: aws elasticbeanstalk list-available-solution-stacks
