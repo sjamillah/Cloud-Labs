@@ -50,13 +50,23 @@ jobs:
           aws s3 cp "app-${GITHUB_SHA}.zip" \
             "s3://${{ env.S3_BUCKET }}/app-${GITHUB_SHA}.zip"
 
-      - name: Create new Elastic Beanstalk application version
+      - name: Create new Elastic Beanstalk application version (idempotent)
         run: |
-          aws elasticbeanstalk create-application-version \
+          EXISTING=$(aws elasticbeanstalk describe-application-versions \
             --application-name "${{ env.EB_APPLICATION_NAME }}" \
-            --version-label "${GITHUB_SHA}" \
-            --source-bundle S3Bucket="${{ env.S3_BUCKET }}",S3Key="app-${GITHUB_SHA}.zip" \
-            --region "${{ env.AWS_REGION }}"
+            --version-labels "${GITHUB_SHA}" \
+            --region "${{ env.AWS_REGION }}" \
+            --query "ApplicationVersions[0].VersionLabel" --output text 2>/dev/null || echo "None")
+
+          if [ "$EXISTING" == "${GITHUB_SHA}" ]; then
+            echo "Version ${GITHUB_SHA} already exists (likely a re-run) - skipping creation, will still deploy it below."
+          else
+            aws elasticbeanstalk create-application-version \
+              --application-name "${{ env.EB_APPLICATION_NAME }}" \
+              --version-label "${GITHUB_SHA}" \
+              --source-bundle S3Bucket="${{ env.S3_BUCKET }}",S3Key="app-${GITHUB_SHA}.zip" \
+              --region "${{ env.AWS_REGION }}"
+          fi
 
       - name: Deploy the new version to the environment
         run: |
