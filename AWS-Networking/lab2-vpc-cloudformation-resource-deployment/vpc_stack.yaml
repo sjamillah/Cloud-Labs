@@ -216,7 +216,7 @@ Resources:
         - IpProtocol: icmp
           FromPort: -1
           ToPort: -1
-          CidrIp: 10.0.0.0/16
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}-public-sg
