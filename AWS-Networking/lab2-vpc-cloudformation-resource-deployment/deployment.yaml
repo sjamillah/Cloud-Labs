@@ -1,0 +1,5 @@
+template-file-path: AWS-Networking/lab2-vpc-cloudformation-resource-deployment/vpc_stack.yaml
+parameters:
+  LabName: Securely Deploying Resources in a VPC Using CloudFormation
+  FullName: jamillahssozi
+tags: {}
