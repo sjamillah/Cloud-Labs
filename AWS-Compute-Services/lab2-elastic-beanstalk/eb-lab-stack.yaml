@@ -15,11 +15,11 @@ Parameters:
 
   GitHubOrg:
     Type: String
-    Description: GitHub username/org that owns the repo (e.g. sjamillah)
+    Description: GitHub username/org that owns the repo
 
   GitHubRepo:
     Type: String
-    Description: Bare repo name only, no URL (e.g. Cloud-Labs)
+    Description: Bare repo name only, no URL
 
   GitHubBranch:
     Type: String
@@ -131,12 +131,15 @@ Resources:
               urllib.request.urlopen(req)
 
           def empty_bucket(bucket):
-              paginator = s3.get_paginator('list_object_versions')
-              for page in paginator.paginate(Bucket=bucket):
-                  objs = [{'Key': v['Key'], 'VersionId': v['VersionId']} for v in page.get('Versions', [])]
-                  objs += [{'Key': m['Key'], 'VersionId': m['VersionId']} for m in page.get('DeleteMarkers', [])]
-                  if objs:
-                      s3.delete_objects(Bucket=bucket, Delete={'Objects': objs})
+              try:
+                  paginator = s3.get_paginator('list_object_versions')
+                  for page in paginator.paginate(Bucket=bucket):
+                      objs = [{'Key': v['Key'], 'VersionId': v['VersionId']} for v in page.get('Versions', [])]
+                      objs += [{'Key': m['Key'], 'VersionId': m['VersionId']} for m in page.get('DeleteMarkers', [])]
+                      if objs:
+                          s3.delete_objects(Bucket=bucket, Delete={'Objects': objs})
+              except s3.exceptions.NoSuchBucket:
+                  pass # If already deleted, ignore and proceed cleanly
 
           def bootstrap_bundle(bucket, key):
               app_py = (
@@ -175,6 +178,7 @@ Resources:
 
   BucketLifecycleManager:
     Type: Custom::BucketLifecycleManager
+    DependsOn: SourceBucket
     Properties:
       ServiceToken: !GetAtt BucketLifecycleFunction.Arn
       BucketName: !Ref SourceBucket
