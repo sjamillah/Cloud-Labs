@@ -41,8 +41,8 @@ jobs:
       - name: Package application into a source bundle
         working-directory: ${{ env.APP_DIR }}
         run: |
-          zip -r "app-${GITHUB_SHA}.zip" . \
-            -x ".git/*" "venv/*" "__pycache__/*" "*.pyc" ".env" "eb-lab-stack.yaml" "README.md"
+          zip -r "app-${GITHUB_SHA}.zip" . .* \
+            -x ".git/*" ".git" "venv/*" "__pycache__/*" "*.pyc" ".env" "eb-lab-stack.yaml" "README.md"
 
       - name: Upload source bundle to S3
         working-directory: ${{ env.APP_DIR }}
