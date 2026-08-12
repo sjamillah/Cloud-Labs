@@ -38,7 +38,7 @@ jobs:
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
           name: eb-deploy-python-lab
-          template: ${{ env.APP_DIR }}/eb-python-lab-stack.yaml
+          template: ${{ env.APP_DIR }}/eb-lab-stack.yaml
           no-fail-on-empty-changeset: "1"
           capabilities: CAPABILITY_NAMED_IAM
           parameter-overrides: >-
