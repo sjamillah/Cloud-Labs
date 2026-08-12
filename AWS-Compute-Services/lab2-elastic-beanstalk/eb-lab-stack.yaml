@@ -277,13 +277,20 @@ Resources:
                 Resource: '*'
               - Effect: Allow
                 Action:
+                  - cloudformation:CreateStack
+                  - cloudformation:UpdateStack
                   - cloudformation:DescribeStacks
                   - cloudformation:DescribeStackEvents
+                  - cloudformation:DescribeStackResources
                   - cloudformation:DescribeStackResource
                   - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
                   - cloudformation:ExecuteChangeSet
+                  - cloudformation:DeleteChangeSet
                   - cloudformation:GetTemplate
-                Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+                Resource: 
+                  - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+                  - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${ProjectName}/*
               - Effect: Allow
                 Action:
                   - iam:GetRole
