@@ -235,63 +235,72 @@ Resources:
       ThumbprintList: ['6938fd4d98bab03faadb97b34396831e3780aea1']
 
   GitHubDeployRole:
-  Type: AWS::IAM::Role
-  Properties:
-    RoleName: eb-github-deploy-role
-    AssumeRolePolicyDocument:
-      Version: '2012-10-17'
-      Statement:
-        - Effect: Allow
-          Principal:
-            Federated: !If [ShouldCreateOIDCProvider, !Ref GitHubOIDCProvider, !Ref ExistingOIDCProviderArn]
-          Action: sts:AssumeRoleWithWebIdentity
-          Condition:
-            StringEquals:
-              token.actions.githubusercontent.com:aud: sts.amazonaws.com
-            StringLike:
-              token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/${GitHubBranch}
-    Policies:
-      - PolicyName: deploy-permissions
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - s3:PutObject
-                - s3:GetObject
-                - s3:ListBucket
-                - s3:GetBucketLocation
-                - s3:CreateBucket
-              Resource:
-                - !Sub ${SourceBucket.Arn}
-                - !Sub ${SourceBucket.Arn}/*
-                - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}
-                - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}/*
-            - Effect: Allow
-              Action:
-                - elasticbeanstalk:CreateApplicationVersion
-                - elasticbeanstalk:DescribeApplicationVersions
-              Resource:
-                - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:application/${ProjectName}
-                - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:applicationversion/${ProjectName}/*
-            - Effect: Allow
-              Action:
-                - elasticbeanstalk:UpdateEnvironment
-                - elasticbeanstalk:DescribeEnvironments
-                - elasticbeanstalk:DescribeEvents
-              Resource:
-                - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:environment/${ProjectName}/*
-            - Effect: Allow
-              Action:
-                - elasticbeanstalk:ListAvailableSolutionStacks
-              Resource: '*'
-            - Effect: Allow
-              Action:
-                - iam:GetRole
-                - iam:PassRole
-              Resource:
-                - !GetAtt EC2InstanceRole.Arn
-                - !Sub arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-bucket-lifecycle-role
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: eb-github-deploy-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !If [ShouldCreateOIDCProvider, !Ref GitHubOIDCProvider, !Ref ExistingOIDCProviderArn]
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepo}:ref:refs/heads/${GitHubBranch}
+      Policies:
+        - PolicyName: deploy-permissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:CreateBucket
+                Resource:
+                  - !Sub ${SourceBucket.Arn}
+                  - !Sub ${SourceBucket.Arn}/*
+                  - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}
+                  - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}/*
+              - Effect: Allow
+                Action:
+                  - elasticbeanstalk:CreateApplicationVersion
+                  - elasticbeanstalk:DescribeApplicationVersions
+                Resource:
+                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:application/${ProjectName}
+                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:applicationversion/${ProjectName}/*
+              - Effect: Allow
+                Action:
+                  - elasticbeanstalk:UpdateEnvironment
+                  - elasticbeanstalk:DescribeEnvironments
+                  - elasticbeanstalk:DescribeEvents
+                Resource:
+                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:environment/${ProjectName}/*
+              - Effect: Allow
+                Action:
+                  - elasticbeanstalk:ListAvailableSolutionStacks
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - cloudformation:GetTemplate
+                  - cloudformation:DescribeStacks
+                  - cloudformation:DescribeStackResources
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:UpdateStack
+                Resource:
+                  - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/awseb-*
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:PassRole
+                Resource:
+                  - !GetAtt EC2InstanceRole.Arn
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-bucket-lifecycle-role
 
   EBApplication:
     Type: AWS::ElasticBeanstalk::Application
