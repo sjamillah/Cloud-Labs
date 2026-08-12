@@ -259,6 +259,7 @@ Resources:
                 Action:
                   - s3:PutObject
                   - s3:GetObject
+                  - s3:GetObjectAcl
                   - s3:ListBucket
                   - s3:GetBucketLocation
                   - s3:CreateBucket
@@ -290,6 +291,7 @@ Resources:
                   - cloudformation:GetTemplate
                   - cloudformation:DescribeStacks
                   - cloudformation:DescribeStackResources
+                  - cloudformation:DescribeStackResource
                   - cloudformation:DescribeStackEvents
                   - cloudformation:UpdateStack
                 Resource:
@@ -301,7 +303,7 @@ Resources:
                 Resource:
                   - !GetAtt EC2InstanceRole.Arn
                   - !Sub arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-bucket-lifecycle-role
-
+                  
   EBApplication:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
