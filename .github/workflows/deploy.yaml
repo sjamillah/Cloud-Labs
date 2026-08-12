@@ -66,6 +66,8 @@ jobs:
               --version-label "${GITHUB_SHA}" \
               --source-bundle S3Bucket="${{ env.S3_BUCKET }}",S3Key="app-${GITHUB_SHA}.zip" \
               --region "${{ env.AWS_REGION }}"
+
+            sleep 5
           fi
 
       - name: Deploy the new version to the environment
