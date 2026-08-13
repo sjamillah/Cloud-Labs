@@ -46,7 +46,7 @@ def home():
     visits = increment_visit_counter()
     return jsonify(
         {
-            "message": "Elastic Beanstalk Python app is running",
+            "message": "Elastic Beanstalk Python app V2",
             "version": get_version(),
             "hostname": socket.gethostname(),
             "total_visits": visits,
