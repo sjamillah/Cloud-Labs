@@ -255,6 +255,18 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
+              # 1. Beanstalk Control Plane Actions
+              - Effect: Allow
+                Action:
+                  - elasticbeanstalk:CreateApplicationVersion
+                  - elasticbeanstalk:DescribeApplicationVersions
+                  - elasticbeanstalk:UpdateEnvironment
+                  - elasticbeanstalk:DescribeEnvironments
+                  - elasticbeanstalk:DescribeEvents
+                  - elasticbeanstalk:ListAvailableSolutionStacks
+                Resource: '*'
+
+              # 2. S3 Object Operations (App Bucket + Managed regional EB Bucket)
               - Effect: Allow
                 Action:
                   - s3:PutObject
@@ -265,30 +277,14 @@ Resources:
                   - s3:DeleteObjectVersion
                   - s3:ListBucket
                   - s3:GetBucketLocation
-                  - s3:CreateBucket
+                  - s3:GetBucketPolicy
                 Resource:
                   - !Sub ${SourceBucket.Arn}
                   - !Sub ${SourceBucket.Arn}/*
                   - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}
                   - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}/*
-              - Effect: Allow
-                Action:
-                  - elasticbeanstalk:CreateApplicationVersion
-                  - elasticbeanstalk:DescribeApplicationVersions
-                Resource:
-                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:application/${ProjectName}
-                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:applicationversion/${ProjectName}/*
-              - Effect: Allow
-                Action:
-                  - elasticbeanstalk:UpdateEnvironment
-                  - elasticbeanstalk:DescribeEnvironments
-                  - elasticbeanstalk:DescribeEvents
-                Resource:
-                  - !Sub arn:aws:elasticbeanstalk:${AWS::Region}:${AWS::AccountId}:environment/${ProjectName}/*
-              - Effect: Allow
-                Action:
-                  - elasticbeanstalk:ListAvailableSolutionStacks
-                Resource: '*'
+
+              # 3. Read-Only Inspection for Infrastructure Components
               - Effect: Allow
                 Action:
                   - cloudformation:GetTemplate
@@ -297,8 +293,14 @@ Resources:
                   - cloudformation:DescribeStackResource
                   - cloudformation:DescribeStackEvents
                   - cloudformation:UpdateStack
-                Resource:
-                  - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/awseb-*
+                  - autoscaling:DescribeAutoScalingGroups
+                  - autoscaling:DescribeAutoScalingInstances
+                  - ec2:DescribeInstances
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                Resource: '*'
+
+              # 4. IAM PassRole for EC2 Instance Execution
               - Effect: Allow
                 Action:
                   - iam:GetRole
