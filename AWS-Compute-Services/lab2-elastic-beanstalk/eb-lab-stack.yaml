@@ -255,7 +255,7 @@ Resources:
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
-              # 1. Beanstalk Control Plane Actions
+              # 1. Beanstalk Control Plane
               - Effect: Allow
                 Action:
                   - elasticbeanstalk:CreateApplicationVersion
@@ -266,7 +266,7 @@ Resources:
                   - elasticbeanstalk:ListAvailableSolutionStacks
                 Resource: '*'
 
-              # 2. S3 Object and Bucket Operations
+              # 2. S3 Storage & Artifact Access
               - Effect: Allow
                 Action:
                   - s3:Get*
@@ -276,20 +276,30 @@ Resources:
                   - s3:DeleteObject
                   - s3:DeleteObjectVersion
                   - s3:CreateBucket
-                Resource: '*'
+                Resource:
+                  - !Sub ${SourceBucket.Arn}
+                  - !Sub ${SourceBucket.Arn}/*
+                  - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}
+                  - !Sub arn:aws:s3:::elasticbeanstalk-${AWS::Region}-${AWS::AccountId}/*
 
-              # 3. Read-Only Inspection for Infrastructure Components
+              # 3. CloudFormation & AutoScaling Orchestration Actions
               - Effect: Allow
                 Action:
                   - cloudformation:Get*
                   - cloudformation:Describe*
                   - cloudformation:List*
                   - cloudformation:UpdateStack
+                  - cloudformation:CancelUpdateStack
+                  - cloudformation:RollbackStack
                   - autoscaling:Describe*
+                  - autoscaling:SuspendProcesses
+                  - autoscaling:ResumeProcesses
+                  - autoscaling:UpdateAutoScalingGroup
                   - ec2:Describe*
+                  - elasticloadbalancing:Describe*
                 Resource: '*'
 
-              # 4. IAM PassRole for EC2 Instance Execution
+              # 4. IAM PassRole
               - Effect: Allow
                 Action:
                   - iam:GetRole
