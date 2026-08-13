@@ -287,19 +287,12 @@ Resources:
               # 3. Read-Only Inspection for Infrastructure Components
               - Effect: Allow
                 Action:
-                  - cloudformation:GetTemplate
-                  - cloudformation:DescribeStacks
-                  - cloudformation:DescribeStackResources
-                  - cloudformation:DescribeStackResource
-                  - cloudformation:DescribeStackEvents
+                  - cloudformation:Get*
+                  - cloudformation:Describe*
+                  - cloudformation:List*
                   - cloudformation:UpdateStack
-                  - autoscaling:DescribeAutoScalingGroups
-                  - autoscaling:DescribeAutoScalingInstances
-                  - ec2:DescribeInstances
-                  - ec2:DescribeImages
-                  - ec2:DescribeSubnets
-                  - ec2:DescribeSecurityGroups
-                  - ec2:DescribeVpcs
+                  - autoscaling:Describe*
+                  - ec2:Describe*
                 Resource: '*'
 
               # 4. IAM PassRole for EC2 Instance Execution
