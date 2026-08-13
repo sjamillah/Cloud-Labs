@@ -285,19 +285,25 @@ Resources:
               # 3. CloudFormation & AutoScaling Orchestration Actions
               - Effect: Allow
                 Action:
+                  - autoscaling:Describe*
+                  - ec2:Describe*
+                  - elasticloadbalancing:Describe*
                   - cloudformation:Get*
                   - cloudformation:Describe*
                   - cloudformation:List*
+                Resource: '*'
+              - Effect: Allow
+                Action:
                   - cloudformation:UpdateStack
                   - cloudformation:CancelUpdateStack
                   - cloudformation:RollbackStack
-                  - autoscaling:Describe*
+                Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/awseb-*
+              - Effect: Allow
+                Action:
                   - autoscaling:SuspendProcesses
                   - autoscaling:ResumeProcesses
                   - autoscaling:UpdateAutoScalingGroup
-                  - ec2:Describe*
-                  - elasticloadbalancing:Describe*
-                Resource: '*'
+                Resource: !Sub arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/awseb-*
 
               # 4. IAM PassRole
               - Effect: Allow
