@@ -296,8 +296,10 @@ Resources:
                   - autoscaling:DescribeAutoScalingGroups
                   - autoscaling:DescribeAutoScalingInstances
                   - ec2:DescribeInstances
+                  - ec2:DescribeImages
                   - ec2:DescribeSubnets
                   - ec2:DescribeSecurityGroups
+                  - ec2:DescribeVpcs
                 Resource: '*'
 
               # 4. IAM PassRole for EC2 Instance Execution
