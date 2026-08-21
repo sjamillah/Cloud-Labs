@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Keep the digest-pinned Python base image current
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+ 
+  # Keep the pinned GitHub Actions (checkout, configure-aws-credentials, etc.) current
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
