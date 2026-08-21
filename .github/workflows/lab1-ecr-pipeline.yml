@@ -1,0 +1,51 @@
+name: Build and Push to Amazon ECR
+ 
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'AWS-Containerization/lab1-ecr-docker-pipeline/**'
+      - '.github/workflows/lab1-ecr-pipeline.yml'
+ 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+ 
+permissions:
+  id-token: write
+  contents: read
+ 
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REPOSITORY: ${{ vars.APP_NAME }}
+  LAB_DIR: ${{ vars.LAB_DIR }}
+  YOUR_FULL_NAME: ${{ vars.YOUR_FULL_NAME }}
+ 
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+ 
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/ecr-github-lab-role
+          aws-region: ${{ env.AWS_REGION }}
+ 
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+ 
+      - name: Build, tag, and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          IMAGE_TAG=${{ env.YOUR_FULL_NAME }}_${{ env.APP_NAME }}
+          docker build --target target -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $LAB_DIR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
