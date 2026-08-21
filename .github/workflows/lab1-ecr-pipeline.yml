@@ -20,7 +20,6 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ECR_REPOSITORY: ${{ vars.APP_NAME }}
   LAB_DIR: ${{ vars.LAB_DIR }}
-  FULL_NAME: ${{ vars.FULL_NAME }}
  
 jobs:
   build-and-push:
@@ -35,7 +34,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/ecr-github-lab-role
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ecr-github-lab-role
           aws-region: ${{ env.AWS_REGION }}
  
       - name: Login to Amazon ECR
@@ -46,6 +45,6 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          IMAGE_TAG=${{ env.FULL_NAME }}_${{ env.APP_NAME }}
+          IMAGE_TAG=${{ vars.FULL_NAME }}_ecr-github-app
           docker build --target target -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $LAB_DIR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
