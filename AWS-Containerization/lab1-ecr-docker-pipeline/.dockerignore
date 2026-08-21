@@ -1,0 +1,30 @@
+# Version control
+.git
+.gitignore
+ 
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+ 
+# CI/CD and infra - not needed inside the image itself
+.github/
+infra/
+ 
+# Docs
+*.md
+ 
+# Editor/OS cruft
+.DS_Store
+.vscode/
+.idea/
+ 
+# Secrets - must never enter the build context
+.env
+.env.*
+*.pem
+*.key
