@@ -20,6 +20,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ECR_REPOSITORY: ${{ vars.APP_NAME }}
   LAB_DIR: ${{ vars.LAB_DIR }}
+  FULL_NAME: ${{ vars.FULL_NAME }} 
  
 jobs:
   build-and-push:
@@ -45,6 +46,6 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          IMAGE_TAG=${{ vars.FULL_NAME }}_ecr-github-app
+          IMAGE_TAG=${FULL_NAME}_${ECR_REPOSITORY}
           docker build --target target -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $LAB_DIR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
