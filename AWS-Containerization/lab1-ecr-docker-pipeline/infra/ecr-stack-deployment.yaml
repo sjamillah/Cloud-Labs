@@ -1,0 +1,3 @@
+template-file-path: AWS-Containerization/lab1-ecr-docker-pipeline/infra/ecr-stack.yaml
+parameters: {}
+tags: {}
