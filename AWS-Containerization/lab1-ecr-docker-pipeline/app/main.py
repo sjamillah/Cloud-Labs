@@ -1,3 +1,4 @@
+"""A Flask app using Docker and ECS"""
 from flask import Flask, jsonify
 import os
  
