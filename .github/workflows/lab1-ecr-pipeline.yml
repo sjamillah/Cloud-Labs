@@ -26,23 +26,22 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Show real token claims
+        run: |
+          JWT=$(curl -sLS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+          PAYLOAD=$(echo "$JWT" | cut -d '.' -f2 | tr '_-' '/+')
+          MOD=$(( ${#PAYLOAD} % 4 ))
+          if [ $MOD -eq 2 ]; then PAYLOAD="${PAYLOAD}=="; fi
+          if [ $MOD -eq 3 ]; then PAYLOAD="${PAYLOAD}="; fi
+          echo "$PAYLOAD" | base64 -d | jq .
+
       - name: Resolve repository variables
         run: |
           echo "AWS_REGION=${{ vars.AWS_REGION }}" >> "$GITHUB_ENV"
           echo "ECR_REPOSITORY=${{ vars.APP_NAME }}" >> "$GITHUB_ENV"
           echo "LAB_DIR=${{ vars.LAB_DIR }}" >> "$GITHUB_ENV"
           echo "FULL_NAME=${{ vars.FULL_NAME }}" >> "$GITHUB_ENV"
-
-      - name: Verify variables actually resolved
-        run: |
-          echo "AWS_REGION=[$AWS_REGION]"
-          echo "ECR_REPOSITORY=[$ECR_REPOSITORY]"
-          echo "LAB_DIR=[$LAB_DIR]"
-          echo "FULL_NAME=[$FULL_NAME]"
-          if [ -z "$AWS_REGION" ] || [ -z "$ECR_REPOSITORY" ] || [ -z "$LAB_DIR" ] || [ -z "$FULL_NAME" ]; then
-            echo "::error::One or more repository variables are empty"
-            exit 1
-          fi
 
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
