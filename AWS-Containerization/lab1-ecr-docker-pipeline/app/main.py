@@ -6,7 +6,7 @@ app = Flask(__name__)
  
 @app.route("/")
 def home():
-    return jsonify(message="Welcome from inside a Docker Container!")
+    return jsonify(message="Welcome from inside a Docker Container where everything is new!")
  
 @app.route("/health")
 def health():
