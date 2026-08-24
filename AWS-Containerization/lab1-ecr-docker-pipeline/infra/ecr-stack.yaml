@@ -7,7 +7,7 @@ Parameters:
     Default: ecr-github-app
   CIRoleArn:
     Type: String
-    Description: ARN of the GitHub Actions OIDC role allowed to push images (no default - supply at deploy time, never commit the real value)
+    Description: ARN of the GitHub Actions OIDC role allowed to push images
 
 Resources:
   AppRepository:
@@ -70,6 +70,6 @@ Resources:
         - Key: ManagedBy
           Value: CloudFormation
 
-Outputs:
-  RepositoryUri:
-    Value: !GetAtt AppRepository.RepositoryUri
+# Outputs:
+#   RepositoryUri:
+#     Value: !GetAtt AppRepository.RepositoryUri
