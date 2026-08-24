@@ -1,0 +1,9 @@
+[
+  {
+    "ResourceType": "AWS::ECR::Repository",
+    "LogicalResourceId": "AppRepository",
+    "ResourceIdentifier": {
+      "RepositoryName": "ecr-github-app"
+    }
+  }
+]
