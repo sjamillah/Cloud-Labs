@@ -1,7 +1,5 @@
 template-file-path: AWS-Containerization/lab1-ecr-docker-pipeline/infra/ecr-stack.yaml
 parameters:
-  RepositoryName: ecr-github-app
   CIRoleArn: arn:aws:iam::697863031884:role/ecr-github-lab-role
-tags:
-  Project: lab1-ecr-docker-pipeline
-  Environment: lab
+  RepositoryName: ecr-github-app
+tags: {}
