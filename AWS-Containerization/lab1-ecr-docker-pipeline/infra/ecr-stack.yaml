@@ -7,6 +7,7 @@ Parameters:
     Default: ecr-github-app
   CIRoleArn:
     Type: String
+    Default: arn:aws:iam::697863031884:role/ecr-github-lab-role
     Description: ARN of the GitHub Actions OIDC role allowed to push images
 
 Resources:
@@ -34,6 +35,13 @@ Resources:
               - ecr:InitiateLayerUpload
               - ecr:UploadLayerPart
               - ecr:CompleteLayerUpload
+          - Sid: AllowPullWithinAccount
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action:
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
       LifecyclePolicy:
         LifecyclePolicyText: |
           {
@@ -69,7 +77,3 @@ Resources:
           Value: lab
         - Key: ManagedBy
           Value: CloudFormation
-
-# Outputs:
-#   RepositoryUri:
-#     Value: !GetAtt AppRepository.RepositoryUri
