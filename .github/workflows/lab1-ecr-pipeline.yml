@@ -26,6 +26,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Debug OIDC claims
+        uses: github/actions-oidc-debugger@main
+        with:
+          audience: sts.amazonaws.com
+
       - name: Resolve repository variables
         run: |
           echo "AWS_REGION=${{ vars.AWS_REGION }}" >> "$GITHUB_ENV"
