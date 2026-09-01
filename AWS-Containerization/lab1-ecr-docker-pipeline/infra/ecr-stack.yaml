@@ -59,10 +59,10 @@ Resources:
               },
               {
                 "rulePriority": 2,
-                "description": "Keep only the last 10 tagged images",
+                "description": "Keep only the last 10 versioned builds",
                 "selection": {
                   "tagStatus": "tagged",
-                  "tagPrefixList": ["Jamillah_ecr-github-app"],
+                  "tagPrefixList": ["v"],
                   "countType": "imageCountMoreThan",
                   "countNumber": 10
                 },
