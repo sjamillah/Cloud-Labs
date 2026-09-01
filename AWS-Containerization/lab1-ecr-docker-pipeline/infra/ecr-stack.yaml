@@ -42,6 +42,9 @@ Resources:
             Action:
               - ecr:GetDownloadUrlForLayer
               - ecr:BatchGetImage
+      # ECR permits only ONE rule selecting untagged images. Selecting
+      # "untagged" also means :latest can never be expired - a rule using
+      # tagStatus "any" would eventually delete the live image.
       LifecyclePolicy:
         LifecyclePolicyText: |
           {
@@ -53,17 +56,6 @@ Resources:
                   "tagStatus": "untagged",
                   "countType": "imageCountMoreThan",
                   "countNumber": 10
-                },
-                "action": { "type": "expire" }
-              },
-              {
-                "rulePriority": 2,
-                "description": "Drop superseded builds older than 7 days even when under the count cap",
-                "selection": {
-                  "tagStatus": "untagged",
-                  "countType": "sinceImagePushed",
-                  "countUnit": "days",
-                  "countNumber": 7
                 },
                 "action": { "type": "expire" }
               }
