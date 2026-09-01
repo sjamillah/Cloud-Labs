@@ -1,8 +1,3 @@
-"""Neatly - a small JSON formatter and validator, packaged as a container image.
-
-Stateless by design: every request carries everything it needs, so any replica
-of this image can serve any request. No database, no session, no shared cache.
-"""
 import json
 import os
 
@@ -10,11 +5,9 @@ from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
-MAX_BYTES = 1_000_000  # refuse anything larger rather than burn memory on it
+MAX_BYTES = 1_000_000
 
 
-# Python's json errors are accurate but unfriendly. Each entry maps the start
-# of a stdlib message to something a person can act on.
 PLAIN = [
     ("Expecting property name enclosed in double quotes",
      "Keys need double quotes. Single quotes and bare words won't work here."),
