@@ -1,12 +1,15 @@
 version: 2
 updates:
-  # Keep the digest-pinned Python base image current
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/AWS-Containerization/lab1-ecr-docker-pipeline"
     schedule:
       interval: "weekly"
- 
-  # Keep the pinned GitHub Actions (checkout, configure-aws-credentials, etc.) current
+
+  - package-ecosystem: "pip"
+    directory: "/AWS-Containerization/lab1-ecr-docker-pipeline/app"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
