@@ -35,7 +35,11 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Build image
-        run: docker build -t neatly:ci "$LAB_DIR"
+        run: |
+          docker build \
+            --build-arg GIT_SHA="$GITHUB_SHA" \
+            --build-arg BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -t neatly:ci "$LAB_DIR"
 
       - name: Smoke test the image
         run: |
@@ -68,9 +72,10 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ vars.APP_NAME }}
         run: |
-          # run_number alone is not unique - re-running a workflow keeps it and
-          # only bumps run_attempt, so both are needed for a distinct tag.
-          IMAGE_TAG="v${{ github.run_number }}.${{ github.run_attempt }}-${GITHUB_SHA::7}"
-          docker tag neatly:ci "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "Pushed $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
+          # Only :latest. Each push moves the tag to the new image, so the most
+          # recent build is the only tagged one - the previous image becomes
+          # untagged and is cleaned up by the repository's lifecycle rule.
+          REPO="$ECR_REGISTRY/$ECR_REPOSITORY"
+          docker tag neatly:ci "$REPO:latest"
+          docker push "$REPO:latest"
+          echo "Pushed $REPO:latest ($GITHUB_SHA)" >> $GITHUB_STEP_SUMMARY
