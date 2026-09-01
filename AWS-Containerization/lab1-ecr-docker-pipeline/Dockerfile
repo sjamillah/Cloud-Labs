@@ -1,5 +1,5 @@
 # Installing the dependencies(builder: stage 1)
-FROM python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a AS builder
+FROM python:3.14-slim@sha256:656d12e70054d5fda18a045e2494c96701e9792dd1445f95b3d038df954f57e9 AS builder
  
 WORKDIR /app
  
@@ -7,7 +7,7 @@ COPY app/requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
  
 # Building the image(stage 2)
-FROM python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a AS target
+FROM python:3.14-slim@sha256:656d12e70054d5fda18a045e2494c96701e9792dd1445f95b3d038df954f57e9 AS target
  
 # Creating a dedicated non-root user - the container never runs as root
 RUN useradd --create-home --shell /bin/bash appuser
