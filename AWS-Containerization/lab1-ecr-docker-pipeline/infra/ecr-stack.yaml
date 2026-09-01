@@ -48,7 +48,7 @@ Resources:
             "rules": [
               {
                 "rulePriority": 1,
-                "description": "Keep the 10 most recent superseded builds so a rollback by digest stays possible. The pipeline pushes only :latest, so every previous build is untagged - these rules are the entire retention story. Neither rule can match a tagged image, so :latest is never at risk.",
+                "description": "Keep the 10 most recent superseded builds so a rollback by digest stays possible",
                 "selection": {
                   "tagStatus": "untagged",
                   "countType": "imageCountMoreThan",
@@ -58,7 +58,7 @@ Resources:
               },
               {
                 "rulePriority": 2,
-                "description": "Drop superseded builds older than 7 days even when the repository is under the count cap. Rule 1 already bounds the count; this one only fires during quiet spells, to stop stale images lingering.",
+                "description": "Drop superseded builds older than 7 days even when under the count cap",
                 "selection": {
                   "tagStatus": "untagged",
                   "countType": "sinceImagePushed",
