@@ -8,6 +8,13 @@ on:
       - 'AWS-Containerization/lab1-ecr-docker-pipeline/**'
       - '.github/workflows/lab1-ecr-pipeline.yml'
 
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'AWS-Containerization/lab1-ecr-docker-pipeline/**'
+      - '.github/workflows/lab1-ecr-pipeline.yml'
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -15,6 +22,9 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+
+env:
+  LAB_DIR: AWS-Containerization/lab1-ecr-docker-pipeline
 
 jobs:
   build-and-push:
@@ -24,17 +34,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build image
+        run: docker build -t neatly:ci "$LAB_DIR"
+
+      - name: Smoke test the image
+        run: |
+          docker run -d --name smoke -p 8080:8080 neatly:ci
+          for i in $(seq 1 20); do
+            curl -fsS http://localhost:8080/health && break || sleep 1
+          done
+          curl -fsS http://localhost:8080/ > /dev/null
+          curl -fsS -X POST http://localhost:8080/api/tidy \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"{\"a\":1}","style":"2"}' > /dev/null
+          docker rm -f smoke
+          echo "Image builds and serves /health, / and /api/tidy" >> $GITHUB_STEP_SUMMARY
+
       - name: Configure AWS credentials via OIDC
+        if: github.event_name == 'push'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ecr-github-lab-role
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        if: github.event_name == 'push'
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push image
+      - name: Tag and push to ECR
+        if: github.event_name == 'push'
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ vars.APP_NAME }}
@@ -42,21 +71,6 @@ jobs:
           # run_number alone is not unique - re-running a workflow keeps it and
           # only bumps run_attempt, so both are needed for a distinct tag.
           IMAGE_TAG="v${{ github.run_number }}.${{ github.run_attempt }}-${GITHUB_SHA::7}"
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ vars.LAB_DIR }}
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag neatly:ci "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           echo "Pushed $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_STEP_SUMMARY
-
-      - name: Smoke test the pushed image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ vars.APP_NAME }}
-        run: |
-          IMAGE_TAG="v${{ github.run_number }}.${{ github.run_attempt }}-${GITHUB_SHA::7}"
-          docker run -d --name smoke -p 8080:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          for i in $(seq 1 20); do
-            curl -fsS http://localhost:8080/health && break || sleep 1
-          done
-          curl -fsS "http://localhost:8080/api/guess?word=about" > /dev/null
-          curl -fsS http://localhost:8080/ > /dev/null
-          docker rm -f smoke
-          echo "Smoke test passed" >> $GITHUB_STEP_SUMMARY

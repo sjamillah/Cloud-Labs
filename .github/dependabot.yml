@@ -4,6 +4,11 @@ updates:
     directory: "/AWS-Containerization/lab1-ecr-docker-pipeline"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "python"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
 
   - package-ecosystem: "pip"
     directory: "/AWS-Containerization/lab1-ecr-docker-pipeline/app"
