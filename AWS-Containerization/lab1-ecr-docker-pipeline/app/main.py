@@ -131,7 +131,7 @@ def tidy():
 
 @app.route("/health")
 def health():
-    return jsonify(status="ok"), 200
+    return jsonify(status="ok and noted"), 200
 
 
 if __name__ == "__main__":
